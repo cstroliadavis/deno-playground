@@ -1,5 +1,13 @@
-import { pathExists } from './third_party.ts'
-import { path } from  './third_party.ts'
+import { path } from "./third_party.ts";
+import { pathExists } from "./third_party.ts";
+
+const { cwd } = Deno;
+
+export const injectables = {
+  cwd,
+  resolvePath: path.resolve,
+  pathExists,
+};
 
 /**
  * Looks for the migrations/legacy directory at the local or any higher level.
@@ -13,15 +21,18 @@ import { path } from  './third_party.ts'
  * // outputs: /Users/your-username/your-path-to-clay-radio/migrations/legacy
  */
 export default async function findMigrationsDir(): Promise<string> {
-  let baseDir: string = Deno.cwd();
+  const { cwd, resolvePath, pathExists } = injectables;
+  let baseDir: string = cwd();
 
-  while( !(await pathExists(path.resolve(baseDir, 'migrations', 'legacy')))) {
-    if(baseDir === '/') {
-      throw new Error(`Cannot find migrations folder. Current working directory is "${Deno.cwd()}".`);
+  while (!(await pathExists(resolvePath(baseDir, "migrations", "legacy")))) {
+    if (baseDir === "/") {
+      throw new Error(
+        `Cannot find migrations folder. Current working directory is "${cwd()}".`,
+      );
     }
-    baseDir = path.resolve(baseDir, '..');
+    baseDir = resolvePath(baseDir, "..");
   }
-  return path.resolve(baseDir, 'migrations', 'legacy');
+  return resolvePath(baseDir, "migrations", "legacy");
 }
 
 if (import.meta.main) {

@@ -1,4 +1,4 @@
-const isUri = (url: string): boolean => url.includes('/_uris/');
+const isUri = (url: string): boolean => url.includes("/_uris/");
 
 /**
  * Given a clay uri that is a /_uris/ uri, this will find the related _page for that uri, otherwise it will return the
@@ -7,9 +7,9 @@ const isUri = (url: string): boolean => url.includes('/_uris/');
  * @returns {Promise<string>}
  */
 export default async function resolvePageUri(uri: string): Promise<string> {
-  const {protocol, pathname } = new URL(uri);
+  const { protocol, pathname } = new URL(uri);
 
-  if(isUri(pathname)) {
+  if (isUri(pathname)) {
     try {
       const result = await fetch(uri);
       const nextUri = await result.text();
